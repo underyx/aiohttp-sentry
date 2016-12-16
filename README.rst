@@ -12,7 +12,10 @@ Usage
     from aiohttp_sentry import SentryMiddleware
     app = web.Application(
         middlewares=(
-            SentryMiddleware,
+            SentryMiddleware({
+                'environment': 'foo',
+                'release': 'bar',
+            }),
             # ...
         ),
     )
