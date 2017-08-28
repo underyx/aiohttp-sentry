@@ -12,7 +12,7 @@ with io.open('README.rst') as f:
 
 setup(
     name='aiohttp-sentry',
-    version='0.1.0',
+    version='0.2.0',
     url='https://github.com/underyx/aiohttp-sentry',
     author='Bence Nagy',
     author_email='bence@underyx.me',
@@ -29,6 +29,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )
