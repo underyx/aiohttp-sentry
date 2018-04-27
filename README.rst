@@ -10,6 +10,19 @@ An aiohttp_ middleware for reporting errors to Sentry_. Python 3.5+ is required.
 Usage
 -----
 
+Just add ``SentryMiddleware`` as a middleware:
+
+.. code-block:: python
+
+    from aiohttp import web
+    from aiohttp_sentry import SentryMiddleware
+    app = web.Application(middlewares=[SentryMiddleware()])
+
+If you want to customize error reporting,
+you can use the optional ``sentry_kwargs`` parameter,
+which is a ``dict`` of kwargs passed to the lower-level Sentry library, ``raven``.
+With this, you can specify environment details, filter out specific exceptions, and so on:
+
 .. code-block:: python
 
     from aiohttp import web
@@ -19,6 +32,7 @@ Usage
             SentryMiddleware({
                 'environment': 'foo',
                 'release': 'bar',
+                'ignore_exceptions': 'aiohttp.HTTPClientError'
             }),
             # ...
         ),
