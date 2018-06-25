@@ -12,9 +12,9 @@ class SentryMiddleware:
 
         sentry_kwargs = {
             'transport': raven_aiohttp.AioHttpTransport,
-            'enable_breadcrumbs': False,
             **sentry_kwargs,
         }
+        sentry_kwargs.setdefault('enable_breadcrumbs', False)
         self.client = raven.Client(**sentry_kwargs)
 
     async def __call__(self, app, handler):
