@@ -29,7 +29,7 @@ class SentryMiddleware:
             raise
 
     async def get_extra_data(self, request):
-        return {
+        data = {
             'request': {
                 'query_string': request.query_string,
                 'cookies': request.headers.get('Cookie', ''),
@@ -37,8 +37,10 @@ class SentryMiddleware:
                 'url': request.path,
                 'method': request.method,
                 'scheme': request.scheme,
-                'env': {
-                    'REMOTE_ADDR': request.transport.get_extra_info('peername')[0],
-                },
             },
         }
+
+        if request.transport:
+            data['env'] = {'REMOTE_ADDR': request.transport.get_extra_info('peername')[0]}
+
+        return data
