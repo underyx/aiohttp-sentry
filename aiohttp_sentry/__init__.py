@@ -1,4 +1,6 @@
+import asyncio
 from functools import partial
+import sys
 
 import raven
 import raven_aiohttp
@@ -10,12 +12,37 @@ class SentryMiddleware:
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
+        if sentry_kwargs.get('install_sys_hook'):
+            install_excepthook = True
+            sentry_kwargs['install_sys_hook'] = False
+
         sentry_kwargs = {
             'transport': raven_aiohttp.AioHttpTransport,
             'enable_breadcrumbs': False,
             **sentry_kwargs,
         }
         self.client = raven.Client(**sentry_kwargs)
+
+        if install_excepthook:
+            self.update_excepthook()
+
+    def update_excepthook(self):
+        """Update sys.excepthook so that it closes the sentry transport."""
+
+        loop = asyncio.get_event_loop()
+        original_excepthook = sys.excepthook
+        def aiohttp_transport_excepthook(*exc_info):
+            """An aiohttp-transport-friendly excepthook.
+
+            It closes the transport, which delivers the messages."""
+            self.client.captureException(exc_info=exc_info, level='fatal')
+            transport = self.client.remote.get_transport()
+            if isinstance(transport, raven_aiohttp.AioHttpTransportBase):
+                # wait for Sentry transport to send the outstanding messages
+                loop.run_until_complete(transport.close())
+            original_excepthook(*exc_info)
+
+        sys.excepthook = aiohttp_transport_excepthook
 
     async def __call__(self, app, handler):
         return partial(self.middleware, handler)
