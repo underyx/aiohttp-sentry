@@ -32,7 +32,7 @@ class SentryMiddleware:
                     'url': request.path,
                     'method': request.method,
                     'env': {
-                        'REMOTE_ADDR': request.transport.get_extra_info('peername')[0],
+                        'REMOTE_ADDR': request.transport.get_extra_info('peername')[0] if request.transport else 'unknown',
                     }
                 }
             })
