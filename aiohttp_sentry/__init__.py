@@ -1,4 +1,6 @@
+import asyncio
 from functools import partial
+import sys
 
 import raven
 import raven_aiohttp
@@ -6,16 +8,51 @@ import raven_aiohttp
 
 class SentryMiddleware:
 
-    def __init__(self, sentry_kwargs=None):
+    def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
         sentry_kwargs = {
             'transport': raven_aiohttp.AioHttpTransport,
             'enable_breadcrumbs': False,
+            # by default, do not let raven.Client install its own excepthook
+            'install_sys_hook': not install_excepthook,
             **sentry_kwargs,
         }
         self.client = raven.Client(**sentry_kwargs)
+
+        if install_excepthook:
+            self.update_excepthook(loop)
+
+    def update_excepthook(self, loop=None):
+        """Update sys.excepthook so that it closes the Sentry transport.
+
+        If a custom event loop is provided,
+        it will be used for closing the Sentry transport
+        derived from raven_aiohttp.AioHttpTransportBase
+        instead of the event loop for the current context
+        defined by the current event loop policy.
+        """
+        original_excepthook = sys.excepthook
+
+        def aiohttp_transport_excepthook(*exc_info):
+            """An aiohttp-transport-friendly excepthook.
+
+            It closes the transport, which delivers the messages."""
+            self.client.captureException(exc_info=exc_info, level='fatal')
+            transport = self.client.remote.get_transport()
+            if isinstance(transport, raven_aiohttp.AioHttpTransportBase):
+                event_loop = loop
+                if event_loop is None:
+                    event_loop = asyncio.get_event_loop()
+                # wait for Sentry transport to send the outstanding messages
+                event_loop.run_until_complete(transport.close())
+            # the idea of using the original excepthook
+            # was taken from raven-python repository:
+            # https://github.com/getsentry/raven-python/blob/f6d79c3bcc25e804b6259fa9c4a6e030f9033bb2/raven/base.py#L280
+            original_excepthook(*exc_info)
+
+        sys.excepthook = aiohttp_transport_excepthook
 
     async def __call__(self, app, handler):
         return partial(self.middleware, handler)
