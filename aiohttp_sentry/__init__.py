@@ -8,12 +8,12 @@ import raven_aiohttp
 
 class SentryMiddleware:
 
-    def __init__(self, sentry_kwargs=None):
+    def __init__(self, install_excepthook=True, sentry_kwargs=None):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
-        if sentry_kwargs.get('install_sys_hook'):
-            install_excepthook = True
+        if install_excepthook:
+            # do not let raven.Client install its own excepthook
             sentry_kwargs['install_sys_hook'] = False
 
         sentry_kwargs = {
