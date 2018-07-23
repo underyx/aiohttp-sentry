@@ -41,6 +41,6 @@ class SentryMiddleware:
         }
 
         if request.transport:
-            data['env'] = {'REMOTE_ADDR': request.transport.get_extra_info('peername')[0]}
+            data['request']['env'] = {'REMOTE_ADDR': request.transport.get_extra_info('peername')[0]}
 
         return data
