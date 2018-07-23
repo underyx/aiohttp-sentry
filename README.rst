@@ -76,8 +76,8 @@ Here's what that looks like:
 
 While ``get_extra_data`` is a coroutine,
 which means it can make database queries, API calls,
-or other I/O operations, but use this carefully,
-make sure you understand the implications of executing expensive operations every time an error happens.
+or other I/O operations, use this carefully!
+Make sure you understand the implications of executing expensive operations every time an error happens.
 If the root cause of the error is an overloaded database,
 you are just going to make the problem worse,
 while not even being able to get the extra info you wanted.

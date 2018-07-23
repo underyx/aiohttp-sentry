@@ -1,2 +1,2 @@
 raven-aiohttp~=0.7.0
-raven~=6.7
+raven~=6.10
