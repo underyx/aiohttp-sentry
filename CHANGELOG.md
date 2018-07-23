@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.4.1 (2018-07-23)
+
+- Fix stucture of how `REMOTE_ADDR` is passed, to get rid of this error on Sentry:
+  > Discarded invalid parameter 'env'
+
+## 0.4.0.post1 (2018-07-23)
+
+- Un-bump requirements to raven 6.9, as 6.10 hasn't been released yet :see_no_evil:
+
 ## 0.4.0 (2018-07-23)
 
 - Allow adding custom extra data to be passed with exception info (thanks, @playpauseandstop!)
