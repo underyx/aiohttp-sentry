@@ -1,4 +1,4 @@
-[Default]
+[all]
 files = **.(py|md|rst|yml), tox.ini, .coafile
 ignore = (.tox|env|.env|venv)/**
 
@@ -8,40 +8,43 @@ max_line_length = 120
 max_lines_per_file = 1000
 file_naming_convention = snake
 
-[filenames]
+[all.filenames]
 bears = FilenameBear
 files = aiohttp_sentry/**.py
 
-[lengths]
+[all.lengths]
 bears = LineCountBear, LineLengthBear
 
-[spacing]
+[all.spacing]
 ignore = (.tox|env|.env|venv)/**, **.yml, tox.ini, .coafile
 bears = SpaceConsistencyBear
 
-[config-spacing]
+[all.config-spacing]
 files = **.yml, tox.ini, .coafile
 bears = SpaceConsistencyBear
 indent_size = 2
 
-[python-semantic]
+[all.python]
+files = **.py
+
+[all.python.semantic]
 files = **.py
 bears = RadonBear, PyUnusedCodeBear
 language = python
 
-[yaml]
+[all.yaml]
 files = **.(yml|yaml)
 bears = YAMLLintBear
 
-[restructuredtext]
+[all.restructuredtext]
 files = **.rst
 bears = reSTLintBear
 
-[commit]
+[all.commit]
 bears = GitCommitBear
 shortlog_length = 72
 
-[keywords]
+[all.keywords]
 bears = KeywordBear
 keywords = TODO, FIXME, pdb.set_trace()  # Ignore KeywordBear
 language = python
