@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: python:3.7-alpine3.7
+    steps:
+      - checkout
+      - run: apk add --no-cache git
+      - run: pip install tox==3.1.*
+      - restore_cache:
+          key: >
+            dependency-cache
+            -{{ checksum "tox.ini" }}
+            -{{ checksum "requirements.txt" }}
+            -{{ checksum "test-requirements.txt" }}
+      - run: tox --notest
+      - save_cache:
+          key: >
+            dependency-cache
+            -{{ checksum "tox.ini" }}
+            -{{ checksum "requirements.txt" }}
+            -{{ checksum "test-requirements.txt" }}
+          paths:
+            - .tox
+      - run: tox -e coala -- --non-interactive
+      - run: tox -e pylint
