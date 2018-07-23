@@ -24,16 +24,20 @@ class SentryMiddleware:
         try:
             return await handler(request)
         except:
-            self.client.captureException(data={
-                'request': {
-                    'query_string': request.query_string,
-                    'cookies': request.headers.get('Cookie', ''),
-                    'headers':  dict(request.headers),
-                    'url': request.path,
-                    'method': request.method,
-                    'env': {
-                        'REMOTE_ADDR': request.transport.get_extra_info('peername')[0],
-                    }
-                }
-            })
+            extra_data = await self.get_extra_data(request)
+            self.client.captureException(data=extra_data)
             raise
+
+    async def get_extra_data(self, request):
+        return {
+            'request': {
+                'query_string': request.query_string,
+                'cookies': request.headers.get('Cookie', ''),
+                'headers':  dict(request.headers),
+                'url': request.path,
+                'method': request.method,
+                'env': {
+                    'REMOTE_ADDR': request.transport.get_extra_info('peername')[0],
+                },
+            },
+        }
