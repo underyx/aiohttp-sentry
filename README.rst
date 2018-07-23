@@ -51,6 +51,7 @@ Attaching Data to Events
 
 By default, `aiohttp-sentry` passes this data alongside reported exceptions:
 
+- HTTP scheme
 - HTTP method
 - URL
 - Query String
