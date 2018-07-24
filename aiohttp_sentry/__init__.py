@@ -8,7 +8,7 @@ import raven_aiohttp
 
 class SentryMiddleware:
 
-    def __init__(self, sentry_kwargs=None, *, install_excepthook=True):
+    def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
@@ -22,13 +22,19 @@ class SentryMiddleware:
         self.client = raven.Client(**sentry_kwargs)
 
         if install_excepthook:
-            self.update_excepthook()
+            self.update_excepthook(loop)
 
-    def update_excepthook(self):
-        """Update sys.excepthook so that it closes the sentry transport."""
+    def update_excepthook(self, loop=None):
+        """Update sys.excepthook so that it closes the Sentry transport.
 
-        loop = asyncio.get_event_loop()
+        If a custom event loop is provided,
+        it will be used for closing the Sentry transport
+        derived from raven_aiohttp.AioHttpTransportBase
+        instead of the event loop for the current context
+        defined by the current event loop policy.
+        """
         original_excepthook = sys.excepthook
+
         def aiohttp_transport_excepthook(*exc_info):
             """An aiohttp-transport-friendly excepthook.
 
@@ -36,6 +42,8 @@ class SentryMiddleware:
             self.client.captureException(exc_info=exc_info, level='fatal')
             transport = self.client.remote.get_transport()
             if isinstance(transport, raven_aiohttp.AioHttpTransportBase):
+                if loop is None:
+                    loop = asyncio.get_event_loop()
                 # wait for Sentry transport to send the outstanding messages
                 loop.run_until_complete(transport.close())
             original_excepthook(*exc_info)
