@@ -12,13 +12,11 @@ class SentryMiddleware:
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
-        if install_excepthook:
-            # do not let raven.Client install its own excepthook
-            sentry_kwargs['install_sys_hook'] = False
-
         sentry_kwargs = {
             'transport': raven_aiohttp.AioHttpTransport,
             'enable_breadcrumbs': False,
+            # by default, do not let raven.Client install its own excepthook
+            'install_sys_hook': not install_excepthook,
             **sentry_kwargs,
         }
         self.client = raven.Client(**sentry_kwargs)
