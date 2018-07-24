@@ -8,7 +8,7 @@ import raven_aiohttp
 
 class SentryMiddleware:
 
-    def __init__(self, install_excepthook=True, sentry_kwargs=None):
+    def __init__(self, sentry_kwargs=None, *, install_excepthook=True):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
