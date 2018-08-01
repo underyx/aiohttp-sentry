@@ -42,10 +42,11 @@ class SentryMiddleware:
             self.client.captureException(exc_info=exc_info, level='fatal')
             transport = self.client.remote.get_transport()
             if isinstance(transport, raven_aiohttp.AioHttpTransportBase):
-                if loop is None:
-                    loop = asyncio.get_event_loop()
+                event_loop = loop
+                if event_loop is None:
+                    event_loop = asyncio.get_event_loop()
                 # wait for Sentry transport to send the outstanding messages
-                loop.run_until_complete(transport.close())
+                event_loop.run_until_complete(transport.close())
             # the idea of using the original excepthook
             # was taken from raven-python repository:
             # https://github.com/getsentry/raven-python/blob/f6d79c3bcc25e804b6259fa9c4a6e030f9033bb2/raven/base.py#L280
