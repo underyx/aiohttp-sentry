@@ -36,11 +36,11 @@ class SentryMiddleware:
                 'headers':  dict(request.headers),
                 'url': request.path,
                 'method': request.method,
-                'scheme': request.scheme,
             },
         }
 
         if request.transport:
             data['request']['env'] = {'REMOTE_ADDR': request.transport.get_extra_info('peername')[0]}
+            data['request']['scheme'] = request.scheme
 
         return data
