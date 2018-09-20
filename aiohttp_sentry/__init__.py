@@ -25,7 +25,7 @@ class SentryMiddleware:
             return await handler(request)
         except:
             extra_data = await self.get_extra_data(request)
-            self.client.captureException(data=extra_data)
+            self.client.captureException(extra=extra_data)
             raise
 
     async def get_extra_data(self, request):
