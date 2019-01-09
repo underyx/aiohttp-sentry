@@ -1,4 +1,5 @@
 import asyncio
+from aiohttp import web
 from functools import partial
 import sys
 
@@ -6,6 +7,7 @@ import raven
 import raven_aiohttp
 
 
+@web.middleware
 class SentryMiddleware:
     def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None):
         if sentry_kwargs is None:
@@ -53,10 +55,7 @@ class SentryMiddleware:
 
         sys.excepthook = aiohttp_transport_excepthook
 
-    async def __call__(self, app, handler):
-        return partial(self.middleware, handler)
-
-    async def middleware(self, handler, request):
+    async def __call__(self, request, handler):
         try:
             return await handler(request)
         except:
