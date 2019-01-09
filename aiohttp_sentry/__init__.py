@@ -1,9 +1,9 @@
-from functools import partial
-
+from aiohttp import web
 import raven
 import raven_aiohttp
 
 
+@web.middleware
 class SentryMiddleware:
 
     def __init__(self, sentry_kwargs=None):
@@ -17,10 +17,7 @@ class SentryMiddleware:
         }
         self.client = raven.Client(**sentry_kwargs)
 
-    async def __call__(self, app, handler):
-        return partial(self.middleware, handler)
-
-    async def middleware(self, handler, request):
+    async def __call__(self, request, handler):
         try:
             return await handler(request)
         except:
