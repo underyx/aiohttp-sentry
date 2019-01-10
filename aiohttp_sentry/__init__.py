@@ -7,16 +7,15 @@ import raven_aiohttp
 
 
 class SentryMiddleware:
-
     def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
         sentry_kwargs = {
-            'transport': raven_aiohttp.AioHttpTransport,
-            'enable_breadcrumbs': False,
+            "transport": raven_aiohttp.AioHttpTransport,
+            "enable_breadcrumbs": False,
             # by default, do not let raven.Client install its own excepthook
-            'install_sys_hook': not install_excepthook,
+            "install_sys_hook": not install_excepthook,
             **sentry_kwargs,
         }
         self.client = raven.Client(**sentry_kwargs)
@@ -39,7 +38,7 @@ class SentryMiddleware:
             """An aiohttp-transport-friendly excepthook.
 
             It closes the transport, which delivers the messages."""
-            self.client.captureException(exc_info=exc_info, level='fatal')
+            self.client.captureException(exc_info=exc_info, level="fatal")
             transport = self.client.remote.get_transport()
             if isinstance(transport, raven_aiohttp.AioHttpTransportBase):
                 event_loop = loop
@@ -67,17 +66,19 @@ class SentryMiddleware:
 
     async def get_extra_data(self, request):
         data = {
-            'request': {
-                'query_string': request.query_string,
-                'cookies': request.headers.get('Cookie', ''),
-                'headers':  dict(request.headers),
-                'url': request.path,
-                'method': request.method,
-            },
+            "request": {
+                "query_string": request.query_string,
+                "cookies": request.headers.get("Cookie", ""),
+                "headers": dict(request.headers),
+                "url": request.path,
+                "method": request.method,
+            }
         }
 
         if request.transport:
-            data['request']['env'] = {'REMOTE_ADDR': request.transport.get_extra_info('peername')[0]}
-            data['request']['scheme'] = request.scheme
+            data["request"]["env"] = {
+                "REMOTE_ADDR": request.transport.get_extra_info("peername")[0]
+            }
+            data["request"]["scheme"] = request.scheme
 
         return data
