@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.5.0 (2019-01-10)
+
+- Use new-style, aiohttp 2.3+ middleware definition,
+  to get rid of the warning aiohttp emits about this
+- Install a modified `sys.excepthook` which closes the Sentry transport
+- Check if a protocol exists before trying to access the scheme
+- Format the codebase with Black
+- Bump requirements to raven 6.10
+
 ## 0.4.1 (2018-07-23)
 
 - Fix stucture of how `REMOTE_ADDR` is passed, to get rid of this error on Sentry:
