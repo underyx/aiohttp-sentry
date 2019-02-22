@@ -70,7 +70,7 @@ Here's what that looks like:
 
         async def get_extra_data(self, request):
             return {
-                **super().get_extra_data(request)
+                **await super().get_extra_data(request),
                 'settings': request.app['settings'],
             }
 
