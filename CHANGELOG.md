@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.0 (unreleased)
+
+- Configure logging handler so that errors are propagated to sentry too. (#19)
+
 ## 0.5.0 (2019-01-10)
 
 - Use new-style, aiohttp 2.3+ middleware definition,
