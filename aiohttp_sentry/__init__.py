@@ -2,10 +2,10 @@ import asyncio
 import logging
 import sys
 
+from aiohttp import web
+
 import raven
 import raven_aiohttp
-
-from aiohttp import web
 from raven.conf import setup_logging
 from raven.handlers.logging import SentryHandler
 
@@ -13,7 +13,7 @@ from raven.handlers.logging import SentryHandler
 @web.middleware
 class SentryMiddleware:
     def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None,
-                 sentry_log_level=logging.ERROR):
+                 patch_logging=False, sentry_log_level=logging.ERROR):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
@@ -27,9 +27,10 @@ class SentryMiddleware:
         self.client = raven.Client(**sentry_kwargs)
 
         # Setup Sentry logger - https://docs.sentry.io/clients/python/integrations/#logging
-        handler = SentryHandler(client=self.client)
-        handler.setLevel(sentry_log_level)
-        setup_logging(handler)
+        if patch_logging:
+            handler = SentryHandler(client=self.client)
+            handler.setLevel(sentry_log_level)
+            setup_logging(handler)
 
         if install_excepthook:
             self.update_excepthook(loop)
