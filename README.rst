@@ -6,7 +6,7 @@ aiohttp-sentry
    :target: https://circleci.com/gh/underyx/aiohttp-sentry
    :alt: CI Status
 
-An aiohttp_ middleware for reporting errors to Sentry_. Python 3.5+ is required.
+An aiohttp_ server middleware for reporting failed requests to Sentry_
 
 *****
 Usage
