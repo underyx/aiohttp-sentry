@@ -43,6 +43,21 @@ With this, you can specify environment details, filter out specific exceptions, 
         ),
     )
 
+
+IF you are using python logging library, you might want to configure Sentry for that too:
+
+.. code-block:: python
+
+    import logging
+    from aiohttp import web
+    from aiohttp_sentry import SentryMiddleware
+	
+    app = web.Application(
+        middlewares=(SentryMiddleware(patch_logging=True, sentry_log_level=logging.WARNING))
+    )
+
+
+
 .. _aiohttp: http://aiohttp.readthedocs.io/en/stable/
 .. _Sentry: http://sentry.io/
 
