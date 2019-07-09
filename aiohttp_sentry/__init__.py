@@ -1,14 +1,19 @@
+import asyncio
+import logging
 import sys
 
-import asyncio
-from aiohttp import web
 import raven
 import raven_aiohttp
+
+from aiohttp import web
+from raven.conf import setup_logging
+from raven.handlers.logging import SentryHandler
 
 
 @web.middleware
 class SentryMiddleware:
-    def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None):
+    def __init__(self, sentry_kwargs=None, *, install_excepthook=True, loop=None,
+                 sentry_log_level=logging.ERROR):
         if sentry_kwargs is None:
             sentry_kwargs = {}
 
@@ -20,6 +25,11 @@ class SentryMiddleware:
             **sentry_kwargs,
         }
         self.client = raven.Client(**sentry_kwargs)
+
+        # Setup Sentry logger - https://docs.sentry.io/clients/python/integrations/#logging
+        handler = SentryHandler(client=self.client)
+        handler.setLevel(sentry_log_level)
+        setup_logging(handler)
 
         if install_excepthook:
             self.update_excepthook(loop)
@@ -49,7 +59,8 @@ class SentryMiddleware:
                 event_loop.run_until_complete(transport.close())
             # the idea of using the original excepthook
             # was taken from raven-python repository:
-            # https://github.com/getsentry/raven-python/blob/f6d79c3bcc25e804b6259fa9c4a6e030f9033bb2/raven/base.py#L280
+            # https://github.com/getsentry/raven-python/blob/
+            #   f6d79c3bcc25e804b6259fa9c4a6e030f9033bb2/raven/base.py#L280
             original_excepthook(*exc_info)
 
         sys.excepthook = aiohttp_transport_excepthook
