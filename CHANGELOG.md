@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.0 (2019-07-11)
+
+- Add option to patch stdlib logging to send events (thanks, @Natim!)
+
 ## 0.5.0 (2019-01-10)
 
 - Use new-style, aiohttp 2.3+ middleware definition,

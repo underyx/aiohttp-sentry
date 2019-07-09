@@ -12,7 +12,7 @@ with io.open("README.rst") as f:
 
 setup(
     name="aiohttp-sentry",
-    version="0.5.0",
+    version="0.6.0",
     url="https://github.com/underyx/aiohttp-sentry",
     author="Bence Nagy",
     author_email="bence@underyx.me",

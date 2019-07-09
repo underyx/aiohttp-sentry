@@ -43,6 +43,26 @@ With this, you can specify environment details, filter out specific exceptions, 
         ),
     )
 
+If you are using the standard library's ``logging`` module,
+we have a convenient parameter to patch it for you,
+to have logger calls send events to Sentry automatically:
+
+.. warning::
+    This modifies your logging configuration globally
+    when you instantiate the middleware.
+    Even if you don't end up using the middleware instance for a request,
+    all your logs will be sent to Sentry.
+
+.. code-block:: python
+
+    import logging
+    from aiohttp import web
+    from aiohttp_sentry import SentryMiddleware
+
+    app = web.Application(
+        middlewares=[SentryMiddleware(patch_logging=True, sentry_log_level=logging.WARNING)],
+    )
+
 .. _aiohttp: http://aiohttp.readthedocs.io/en/stable/
 .. _Sentry: http://sentry.io/
 
